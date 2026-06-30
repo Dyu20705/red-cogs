@@ -8,35 +8,33 @@
 
 # 🏰 Duy Red Cogs
 
-Một repository cog dành cho **Red-DiscordBot** để vận hành server Discord cá nhân theo hướng có cấu trúc, an toàn và có thể kiểm tra lại.
+Bộ cog **Red-DiscordBot** dành cho server cá nhân: dựng cấu trúc Discord, theo dõi vận hành, kết nối GitHub, tự động hóa feed/nhạc, quản lý học tập và hiển thị tình trạng bot.
 
-Repository hiện có hai cog:
+## Danh mục cog
 
 | Cog | Vai trò | Lệnh chính |
 |---|---|---|
-| [`imperialsetup`](imperialsetup/) | Audit, reconcile và khởi tạo cấu trúc server theo blueprint “Quân chủ chuyên chế” | `[p]deche` |
-| [`developmentops`](developmentops/) | Kết nối GitHub với Discord: webhook feed, PR review thread, Forum ↔ Issue và daily goals | `[p]devset` |
+| [`imperialsetup`](imperialsetup/) | Audit, lập kế hoạch và reconcile cấu trúc/permission server theo blueprint | `[p]deche` |
+| [`developmentops`](developmentops/) | GitHub webhook, feed, PR review thread và Discord Forum ↔ GitHub Issue | `[p]devset` |
+| [`botops`](botops/) | Audit log, incident/error reporting và traceback đã redact | `[p]botops` |
+| [`imperialautomation`](imperialautomation/) | RSS/digest, Audio controls, queue quota, now-playing panel và private listening room | `[p]ia` |
+| [`studyops`](studyops/) | Daily goals, Pomodoro, study log, weekly progress và temporary study rooms | `[p]studyset` |
+| [`musicstatus`](musicstatus/) | Bảng health định kỳ cho Red, latency, uptime, Lavalink và active music rooms | `[p]musicstatus` |
 
 > [!IMPORTANT]
-> `[p]` là **prefix của Red**, không phải văn bản cần nhập nguyên. Nếu prefix là `!`, `[p]help` nghĩa là `!help`. Các lệnh `[p]...` được gửi **trong Discord**, không phải CMD/PowerShell/terminal.
+> `[p]` là prefix của Red. Nếu prefix là `!`, `[p]help` nghĩa là `!help`. Các lệnh này được gửi **trong Discord**, không phải CMD/PowerShell/terminal.
 
-## Vì sao dự án này không chỉ là “config”?
-
-- `imperialsetup` là một **reconciler**: đọc trạng thái server, lập kế hoạch và đưa các resource được quản lý về trạng thái mong muốn.
-- `developmentops` là một **integration service**: nhận webhook GitHub, gọi GitHub API và điều phối luồng công việc Discord.
-- Repository có metadata Red, kiểm tra cấu trúc, unit test, secret scan và GitHub Actions CI.
-
-## Bắt đầu nhanh
+## Bắt đầu
 
 ### 1. Cài Red và tạo bot
 
-Hướng dẫn từ tạo Discord application đến chạy Red trên Windows 10/11 hoặc Ubuntu 24.04:
+Xem hướng dẫn đầy đủ cho Discord application, Windows 10/11 và Ubuntu 24.04:
 
 **[docs/INSTALLATION.md](docs/INSTALLATION.md)**
 
-### 2. Thêm repository bằng Downloader
+### 2. Thêm repository
 
-Chạy bằng tài khoản **Red bot owner** trong Discord:
+Chạy bằng tài khoản Red bot owner trong Discord:
 
 ```text
 [p]load downloader
@@ -44,120 +42,86 @@ Chạy bằng tài khoản **Red bot owner** trong Discord:
 [p]cog list red-cogs
 ```
 
-### 3. Cài ImperialSetup
+Cài đúng cog bạn cần, ví dụ:
 
 ```text
 [p]cog install red-cogs imperialsetup
+[p]cog install red-cogs botops
+[p]cog install red-cogs developmentops
 [p]load imperialsetup
+[p]load botops
+[p]load developmentops
+```
+
+Không nên load cả sáu cog chỉ vì chúng tồn tại. Mỗi cog thêm permission, trạng thái và log cần vận hành.
+
+## ImperialSetup: luồng an toàn
+
+```text
 [p]deche diagnose
 [p]deche audit
 [p]deche plan
-```
-
-Sau khi đọc báo cáo:
-
-```text
 [p]deche reconcile CONFIRM
 [p]deche status
 ```
 
-`optimize` và `launch` là các bước riêng, có chủ đích:
+Chỉ chạy chuẩn hóa mạnh sau khi đã review plan và backup:
 
 ```text
 [p]deche optimize CONFIRM
 [p]deche launch CONFIRM
 ```
 
-### 4. Cài DevelopmentOps
+Hardening layer chỉ thay overwrite thuộc blueprint (`@everyone`, Quân Vương, Nội Các, Cận Vệ và bot). Overwrite của role/member tùy chỉnh được giữ lại; mutation dừng khi nhiều channel cùng khớp một tên/alias.
 
-```text
-[p]cog install red-cogs developmentops
-[p]load developmentops
-[p]devset status
-```
+## Permission model
 
-Cog vẫn có thể load khi chưa cấu hình webhook secret, nhưng receiver GitHub sẽ bị vô hiệu hóa. Xem hướng dẫn environment variable, reverse proxy, GitHub webhook và lệnh cấu hình tại:
+Không cấp `Administrator` mặc định. Role bot phải nằm cao hơn role mà cog cần quản lý. ImperialSetup thường cần:
 
-**[docs/DEVELOPMENTOPS.md](docs/DEVELOPMENTOPS.md)**
+- Manage Roles, Manage Channels
+- View Channels, Send Messages, Embed Links
+- Attach Files, Read Message History
+- Connect, Speak
 
-## ImperialSetup: luồng thay đổi an toàn
+`Manage Server` chỉ cần nếu muốn cog tự đặt AFK channel.
 
-| Bước | Lệnh | Thay đổi server? | Mục đích |
-|---|---|---:|---|
-| Diagnose | `[p]deche diagnose` | Không | Kiểm tra role hierarchy và effective permission |
-| Audit | `[p]deche audit` | Không | Inventory phần khớp, thiếu và không được quản lý |
-| Plan | `[p]deche plan` | Không | Xem hành động dự kiến trước khi chạy |
-| Reconcile | `[p]deche reconcile CONFIRM` | Có | Tái sử dụng, đổi tên, di chuyển và tạo phần thiếu |
-| Optimize | `[p]deche optimize CONFIRM` | Có | Chuẩn hóa permission/topic/slowmode trong ownership boundary |
-| Launch | `[p]deche launch CONFIRM` | Có | Seed channel trống và đăng dashboard |
-| Status | `[p]deche status` | Không | Kiểm tra trạng thái sau triển khai |
+## DevelopmentOps security
 
-### Permission tối thiểu
+- Webhook payload được xác minh bằng HMAC SHA-256.
+- Listener mặc định bind `127.0.0.1:8765`.
+- Chỉ đưa `/github` ra Internet qua HTTPS reverse proxy/tunnel có kiểm soát.
+- Credential GitHub và webhook secret được đọc từ process environment, không lưu trong Red Config.
+- Forum sync có thể chuyển nội dung, attachment URL và creator ID sang GitHub Issue; chỉ bật khi thành viên đã được thông báo.
 
-Không cần cấp `Administrator`. Role bot phải nằm cao hơn các role mà bot cần tạo/sửa.
-
-- Manage Roles
-- Manage Channels
-- View Channels
-- Send Messages
-- Embed Links
-- Attach Files
-- Read Message History
-- Connect
-- Speak
-
-`Manage Server` chỉ cần khi muốn ImperialSetup tự đặt AFK channel.
-
-### Preserve-first thực sự nghĩa là gì?
-
-Lớp hardening chỉ thay overwrite thuộc blueprint:
-
-- `@everyone`
-- `👑 Quân Vương`
-- `🏛️ Nội Các`
-- `🛡️ Cận Vệ`
-- bot member
-
-Overwrite của role/member khác được giữ lại. Resource không nhận diện được cũng không bị xóa.
-
-## DevelopmentOps: phạm vi chính
-
-- Nhận GitHub webhook có kiểm tra HMAC SHA-256.
-- Route push, PR, issue, workflow, release và deployment event vào channel phù hợp.
-- Tạo/refresh thread review cho PR.
-- Đồng bộ Discord Forum post thành GitHub Issue và trạng thái resolved.
-- Đăng DEVELOPMENT GOALS theo lịch UTC+7.
-- Không lưu GitHub credential hoặc webhook secret trong Red Config; secret được đọc từ process environment.
-
-> [!WARNING]
-> Không public trực tiếp port receiver `8765`. Giữ service bind ở `127.0.0.1` và đưa ra Internet qua HTTPS reverse proxy/tunnel có kiểm soát.
+Xem **[docs/DEVELOPMENTOPS.md](docs/DEVELOPMENTOPS.md)**.
 
 ## Tài liệu
 
 - [Cài Discord application và Red trên Windows/Ubuntu](docs/INSTALLATION.md)
-- [Cài cog, update, backup, restore, logs và rollback](docs/OPERATIONS.md)
-- [Triển khai và cấu hình DevelopmentOps](docs/DEVELOPMENTOPS.md)
-- [Audit kiến trúc, giới hạn và hướng refactor](docs/ARCHITECTURE.md)
-- [Bộ công cụ cho bot, study, development, feeds và music](docs/TOOLS.md)
+- [Update, backup, restore, logs, rollback và troubleshooting](docs/OPERATIONS.md)
+- [Triển khai DevelopmentOps](docs/DEVELOPMENTOPS.md)
+- [Architecture audit và thiết kế vNext](docs/ARCHITECTURE.md)
+- [Tools và chiến lược tự động hóa server](docs/TOOLS.md)
 - [Security policy](SECURITY.md)
 - [Contributing guide](CONTRIBUTING.md)
+- [Changelog](CHANGELOG.md)
 
-## Kiểm tra chất lượng local
+## Kiểm tra chất lượng
 
 ```bash
 python scripts/validate_repo.py
 python -m unittest discover -s tests -v
-python -m compileall -q imperialsetup developmentops scripts tests
+python -m compileall -q imperialsetup developmentops botops imperialautomation studyops musicstatus scripts tests
 ```
 
-Runtime behavior vẫn phải được kiểm tra trên bot/server phát triển riêng trước khi áp dụng vào server chính.
+CI kiểm tra metadata của mọi cog, collision trong blueprint, Python syntax, link nội bộ, mẫu credential có độ tin cậy cao và unit test.
 
 ## Giới hạn đã biết
 
-- ImperialSetup hiện vẫn nhận diện resource chủ yếu bằng tên/alias; lưu resource ID + schema version sẽ tốt hơn trong phiên bản tiếp theo.
-- Hai engine chính còn lớn và trộn nhiều trách nhiệm; xem [kiến trúc đề xuất](docs/ARCHITECTURE.md).
-- `developmentops` dùng timezone UTC+7 cố định và receiver nằm trong cùng process Red; production quy mô lớn nên tách ingress/queue khỏi bot.
-- Không có transaction Discord đa bước; backup và `audit → plan` vẫn bắt buộc trước thay đổi lớn.
+- ImperialSetup vẫn nhận diện resource chủ yếu bằng tên/alias; vNext nên lưu resource ID và schema version.
+- Một số cog còn là file lớn, trộn nhiều trách nhiệm.
+- DevelopmentOps có receiver và queue in-process; dedupe không bền qua restart và timezone hiện cố định UTC+7.
+- Discord không có transaction đa bước; backup và `audit → plan` vẫn bắt buộc.
 
 ## License
 
