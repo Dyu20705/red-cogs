@@ -1,10 +1,10 @@
 {
   "author": [
-    "Nguyen Van Duy"
+    "Nguyễn Văn Duy"
   ],
-  "description": "Imperial Automation umbrella cog. This phase implements filtered RSS feeds, daily gossip digests, Red Audio channel controls, queue quotas, a persistent Now Playing panel, and private listening rooms.",
-  "install_msg": "Load with [p]load imperialautomation. Configure channels through [p]ia. This package requires feedparser and integrates with Red's Audio, Permissions, and the optional BotOps cog.",
-  "short": "Filtered feeds and music automation",
+  "description": "Imperial Automation umbrella cog for filtered RSS feeds, daily digests, Red Audio controls, queue quotas, persistent now-playing panels, and private listening rooms.",
+  "install_msg": "Load with `[p]load imperialautomation`, then configure channels through `[p]ia`. This cog requires `feedparser` and integrates with Red Audio, Permissions, and optionally BotOps.",
+  "short": "Filtered feeds and music automation.",
   "requirements": [
     "feedparser>=6.0.11,<7"
   ],
@@ -15,5 +15,12 @@
     "audio",
     "automation"
   ],
-  "type": "COG"
+  "type": "COG",
+  "min_bot_version": "3.5.0",
+  "min_python_version": [
+    3,
+    11,
+    0
+  ],
+  "end_user_data_statement": "This cog stores guild configuration, Discord channel/message/voice-room IDs, feed sources and filtering settings, queue quota state, and persistent now-playing or listening-room mappings required for its automation features."
 }
