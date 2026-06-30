@@ -1,10 +1,10 @@
 {
   "author": [
-    "Nguyen Van Duy"
+    "Nguyễn Văn Duy"
   ],
-  "description": "Daily goals, Pomodoro, study logs, weekly progress, and join-to-create study rooms for Red-DiscordBot.",
-  "install_msg": "Load the cog, configure channels with [p]studyset, then run [p]studyset status.",
-  "short": "Study automation and temporary study rooms",
+  "description": "Daily goals, Pomodoro sessions, study logs, weekly progress reports, and join-to-create study rooms for Red-DiscordBot.",
+  "install_msg": "Load the cog, configure channels with `[p]studyset`, then run `[p]studyset status`. Review temporary voice-room permissions before enabling join-to-create.",
+  "short": "Study automation and temporary study rooms.",
   "requirements": [],
   "tags": [
     "study",
@@ -13,5 +13,12 @@
     "voice",
     "productivity"
   ],
-  "type": "COG"
+  "type": "COG",
+  "min_bot_version": "3.5.0",
+  "min_python_version": [
+    3,
+    11,
+    0
+  ],
+  "end_user_data_statement": "This cog stores guild configuration, Discord user/channel/voice-room IDs, study goals, Pomodoro session state, study-log entries, and progress data required to provide its productivity features."
 }
