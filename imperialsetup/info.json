@@ -1,0 +1,20 @@
+{
+  "author": [
+    "OpenAI"
+  ],
+  "description": "Adaptive, non-destructive, channel-aware server reconciler. It checks effective permissions in each category/channel and provides exact 403 diagnostics.",
+  "short": "Audit, reconcile, optimize, and launch an existing Discord server.",
+  "install_msg": "Adaptive v2.2 loaded. Run `[p]deche diagnose`, `[p]deche audit`, then `[p]deche reconcile CONFIRM`. A 403 now reports the exact blocked operation.",
+  "requirements": [],
+  "tags": [
+    "server",
+    "setup",
+    "audit",
+    "roles",
+    "channels",
+    "permissions",
+    "automation"
+  ],
+  "min_bot_version": "3.5.0",
+  "end_user_data_statement": "This cog does not persistently store end-user data."
+}

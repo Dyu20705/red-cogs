@@ -1,0 +1,9 @@
+{
+  "author": ["Nguyen Van Duy"],
+  "description": "Structured audit, error incident, and traceback logging for Red-DiscordBot.",
+  "install_msg": "Load the cog, then run [p]botops set audit #bot-audit, [p]botops set errors #bot-errors, and [p]botops set logs #bot-logs.",
+  "short": "Operational audit and incident logging",
+  "requirements": [],
+  "tags": ["logging", "audit", "errors", "operations"],
+  "type": "COG"
+}
