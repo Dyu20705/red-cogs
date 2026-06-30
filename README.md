@@ -1,8 +1,4 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="Duy Red Cogs banner" width="900">
-</p>
-
-<p align="center">
   <a href="https://github.com/Dyu20705/red-cogs/actions/workflows/quality.yml"><img alt="Quality checks" src="https://github.com/Dyu20705/red-cogs/actions/workflows/quality.yml/badge.svg"></a>
   <img alt="Red-DiscordBot 3.5+" src="https://img.shields.io/badge/Red--DiscordBot-3.5%2B-dc143c">
   <img alt="Python 3.11+" src="https://img.shields.io/badge/Python-3.11%2B-3776ab">
@@ -10,7 +6,7 @@
   <img alt="Security model" src="https://img.shields.io/badge/security-least%20privilege-6f42c1">
 </p>
 
-# Duy Red Cogs
+# 🏰 Duy Red Cogs
 
 Một repository cog dành cho **Red-DiscordBot** để vận hành server Discord cá nhân theo hướng có cấu trúc, an toàn và có thể kiểm tra lại.
 
@@ -131,39 +127,10 @@ Overwrite của role/member khác được giữ lại. Resource không nhận d
 - Tạo/refresh thread review cho PR.
 - Đồng bộ Discord Forum post thành GitHub Issue và trạng thái resolved.
 - Đăng DEVELOPMENT GOALS theo lịch UTC+7.
-- Không lưu GitHub token hoặc webhook secret trong Red Config; secret được đọc từ process environment.
+- Không lưu GitHub credential hoặc webhook secret trong Red Config; secret được đọc từ process environment.
 
 > [!WARNING]
 > Không public trực tiếp port receiver `8765`. Giữ service bind ở `127.0.0.1` và đưa ra Internet qua HTTPS reverse proxy/tunnel có kiểm soát.
-
-## Cấu trúc repository
-
-```text
-red-cogs/
-├─ imperialsetup/
-│  ├─ blueprint.py
-│  ├─ imperialsetup.py
-│  ├─ hardening.py
-│  ├─ safety.py
-│  └─ info.json
-├─ developmentops/
-│  ├─ developmentops.py
-│  ├─ README.md
-│  └─ info.json
-├─ docs/
-│  ├─ INSTALLATION.md
-│  ├─ OPERATIONS.md
-│  ├─ DEVELOPMENTOPS.md
-│  ├─ ARCHITECTURE.md
-│  └─ TOOLS.md
-├─ scripts/validate_repo.py
-├─ tests/test_safety.py
-├─ assets/banner.svg
-├─ info.json
-├─ SECURITY.md
-├─ CONTRIBUTING.md
-└─ LICENSE
-```
 
 ## Tài liệu
 
@@ -176,8 +143,6 @@ red-cogs/
 - [Contributing guide](CONTRIBUTING.md)
 
 ## Kiểm tra chất lượng local
-
-Các kiểm tra dependency-free không cần cài Red:
 
 ```bash
 python scripts/validate_repo.py
