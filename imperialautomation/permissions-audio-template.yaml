@@ -1,0 +1,17 @@
+# Generated IDs are safer than names.
+# Use:
+#   !permissions acl updateserver
+# or review carefully before:
+#   !permissions acl setserver
+#
+# The command `!ia music permissions` generates a server-specific file.
+COG:
+  Audio:
+    MUSIC_REQUEST_CHANNEL_ID: true
+    MUSIC_CATEGORY_OR_VOICE_ID: true
+    default: false
+COMMAND:
+  audioset:
+    default: false
+  llset:
+    default: false

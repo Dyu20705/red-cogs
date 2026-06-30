@@ -1,0 +1,17 @@
+{
+  "author": [
+    "Nguyen Van Duy"
+  ],
+  "description": "GitHub webhook feed, release routing, PR review threads, Discord Forum to GitHub Issue sync, and daily development goals.",
+  "install_msg": "Set DEVELOPMENTOPS_WEBHOOK_SECRET and optionally DEVELOPMENTOPS_GITHUB_TOKEN in the bot process environment. Configure with [p]devset and point the GitHub webhook to /github.",
+  "short": "GitHub and Discord development automation",
+  "requirements": [],
+  "tags": [
+    "github",
+    "webhook",
+    "development",
+    "review",
+    "issues"
+  ],
+  "type": "COG"
+}

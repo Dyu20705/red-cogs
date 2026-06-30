@@ -1,0 +1,17 @@
+{
+  "author": [
+    "Nguyen Van Duy"
+  ],
+  "description": "Daily goals, Pomodoro, study logs, weekly progress, and join-to-create study rooms for Red-DiscordBot.",
+  "install_msg": "Load the cog, configure channels with [p]studyset, then run [p]studyset status.",
+  "short": "Study automation and temporary study rooms",
+  "requirements": [],
+  "tags": [
+    "study",
+    "pomodoro",
+    "goals",
+    "voice",
+    "productivity"
+  ],
+  "type": "COG"
+}

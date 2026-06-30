@@ -1,0 +1,19 @@
+{
+  "author": [
+    "Nguyen Van Duy"
+  ],
+  "description": "Imperial Automation umbrella cog. This phase implements filtered RSS feeds, daily gossip digests, Red Audio channel controls, queue quotas, a persistent Now Playing panel, and private listening rooms.",
+  "install_msg": "Load with [p]load imperialautomation. Configure channels through [p]ia. This package requires feedparser and integrates with Red's Audio, Permissions, and the optional BotOps cog.",
+  "short": "Filtered feeds and music automation",
+  "requirements": [
+    "feedparser>=6.0.11,<7"
+  ],
+  "tags": [
+    "rss",
+    "feeds",
+    "music",
+    "audio",
+    "automation"
+  ],
+  "type": "COG"
+}
