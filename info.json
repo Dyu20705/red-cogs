@@ -1,0 +1,8 @@
+{
+  "author": [
+    "Nguyễn Văn Duy"
+  ],
+  "description": "Red-DiscordBot cogs for preserve-first Discord server reconciliation and GitHub-to-Discord development workflow automation.",
+  "install_msg": "Repository added. Run `[p]cog list red-cogs`, then install `imperialsetup` and/or `developmentops`. Read each cog's documentation before enabling mutating actions or exposing a webhook receiver.",
+  "short": "Discord infrastructure and GitHub workflow automation for Red."
+}
