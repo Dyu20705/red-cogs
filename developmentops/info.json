@@ -1,17 +1,26 @@
 {
   "author": [
-    "Nguyen Van Duy"
+    "Nguyễn Văn Duy"
   ],
-  "description": "GitHub webhook feed, release routing, PR review threads, Discord Forum to GitHub Issue sync, and daily development goals.",
-  "install_msg": "Set DEVELOPMENTOPS_WEBHOOK_SECRET and optionally DEVELOPMENTOPS_GITHUB_TOKEN in the bot process environment. Configure with [p]devset and point the GitHub webhook to /github.",
-  "short": "GitHub and Discord development automation",
+  "description": "GitHub webhook and API integration for Red-DiscordBot. Routes repository activity to Discord, creates PR review threads, synchronizes Discord Forum posts with GitHub Issues, and posts scheduled development goals.",
+  "short": "GitHub and Discord development workflow automation.",
+  "install_msg": "DevelopmentOps installed. Configure `DEVELOPMENTOPS_WEBHOOK_SECRET` in the Red process environment before enabling the receiver, optionally add a least-privilege GitHub credential, then run `[p]devset status`. Read `docs/DEVELOPMENTOPS.md` before exposing `/github`.",
   "requirements": [],
   "tags": [
     "github",
     "webhook",
     "development",
     "review",
-    "issues"
+    "issues",
+    "forum",
+    "automation"
   ],
-  "type": "COG"
+  "type": "COG",
+  "min_bot_version": "3.5.0",
+  "min_python_version": [
+    3,
+    11,
+    0
+  ],
+  "end_user_data_statement": "This cog stores Discord guild/channel/thread IDs, GitHub repository names, Forum/Issue mappings, PR thread mappings, and schedule settings. When Forum sync is enabled, configured Forum content, attachment URLs, and creator IDs may be copied to GitHub Issues. Credentials and webhook secrets are read only from process environment variables."
 }

@@ -1,9 +1,23 @@
 {
-  "author": ["Nguyen Van Duy"],
-  "description": "Structured audit, error incident, and traceback logging for Red-DiscordBot.",
-  "install_msg": "Load the cog, then run [p]botops set audit #bot-audit, [p]botops set errors #bot-errors, and [p]botops set logs #bot-logs.",
-  "short": "Operational audit and incident logging",
+  "author": [
+    "Nguyễn Văn Duy"
+  ],
+  "description": "Structured audit, error incident, traceback, and operational logging for Red-DiscordBot with credential redaction and configurable Discord destinations.",
+  "install_msg": "Load the cog, then run `[p]botops set audit #bot-audit`, `[p]botops set errors #bot-errors`, and `[p]botops set logs #bot-logs`. Review channel privacy before enabling incident logging.",
+  "short": "Operational audit and incident logging.",
   "requirements": [],
-  "tags": ["logging", "audit", "errors", "operations"],
-  "type": "COG"
+  "tags": [
+    "logging",
+    "audit",
+    "errors",
+    "operations"
+  ],
+  "type": "COG",
+  "min_bot_version": "3.5.0",
+  "min_python_version": [
+    3,
+    11,
+    0
+  ],
+  "end_user_data_statement": "This cog stores guild configuration and Discord channel IDs for audit, error, and operational logging. It may persist redacted incident and traceback records in the cog data path for administrative troubleshooting."
 }

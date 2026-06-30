@@ -1,10 +1,10 @@
 {
   "author": [
-    "OpenAI"
+    "Nguyễn Văn Duy"
   ],
-  "description": "Adaptive, non-destructive, channel-aware server reconciler. It checks effective permissions in each category/channel and provides exact 403 diagnostics.",
-  "short": "Audit, reconcile, optimize, and launch an existing Discord server.",
-  "install_msg": "Adaptive v2.2 loaded. Run `[p]deche diagnose`, `[p]deche audit`, then `[p]deche reconcile CONFIRM`. A 403 now reports the exact blocked operation.",
+  "description": "A preserve-first, channel-aware server reconciler for a personal Red-DiscordBot server. It audits existing structure, creates only missing resources, diagnoses role hierarchy and effective permissions, and preserves custom role/member overwrites outside the blueprint ownership boundary.",
+  "short": "Audit, reconcile, harden, optimize, and launch a Discord server.",
+  "install_msg": "ImperialSetup installed. Run `[p]deche diagnose`, `[p]deche audit`, and `[p]deche plan`. Review the reports before `[p]deche reconcile CONFIRM` or `[p]deche auto CONFIRM`. The bot does not need Administrator, but its role must be above roles it manages.",
   "requirements": [],
   "tags": [
     "server",
@@ -13,8 +13,15 @@
     "roles",
     "channels",
     "permissions",
-    "automation"
+    "automation",
+    "reconcile"
   ],
+  "type": "COG",
   "min_bot_version": "3.5.0",
-  "end_user_data_statement": "This cog does not persistently store end-user data."
+  "min_python_version": [
+    3,
+    11,
+    0
+  ],
+  "end_user_data_statement": "This cog does not persistently store end-user data. It reads guild structure and permissions only while commands are running."
 }

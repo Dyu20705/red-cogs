@@ -1,139 +1,128 @@
-# ImperialSetup Adaptive v2.2
+<p align="center">
+  <a href="https://github.com/Dyu20705/red-cogs/actions/workflows/quality.yml"><img alt="Quality checks" src="https://github.com/Dyu20705/red-cogs/actions/workflows/quality.yml/badge.svg"></a>
+  <img alt="Red-DiscordBot 3.5+" src="https://img.shields.io/badge/Red--DiscordBot-3.5%2B-dc143c">
+  <img alt="Python 3.11+" src="https://img.shields.io/badge/Python-3.11%2B-3776ab">
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-green.svg"></a>
+  <img alt="Security model" src="https://img.shields.io/badge/security-least%20privilege-6f42c1">
+</p>
 
-Phiên bản này dành cho server đã dựng một phần.
+# 🏰 Duy Red Cogs
 
-## Nguyên tắc
+Bộ cog **Red-DiscordBot** dành cho server cá nhân: dựng cấu trúc Discord, theo dõi vận hành, kết nối GitHub, tự động hóa feed/nhạc, quản lý học tập và hiển thị tình trạng bot.
 
-- Quét trước, không thay đổi ở bước audit/plan.
-- Tái sử dụng role/category/channel đã có theo tên và alias.
-- Có thể đổi tên chuẩn và đưa channel nhận diện được về đúng category.
-- Chỉ tạo phần còn thiếu.
-- Không xóa bất cứ role, category, channel hay tin nhắn nào.
-- Category/channel không nhận diện được, ví dụ `MIU R|C`, được giữ nguyên.
-- Nội dung mẫu chỉ được đăng vào channel hoàn toàn trống.
-- Bước reconcile giữ permission hiện có.
-- Bước optimize mới chuẩn hóa permission của phần thuộc blueprint.
+## Danh mục cog
 
-## Cài trên Windows
+| Cog | Vai trò | Lệnh chính |
+|---|---|---|
+| [`imperialsetup`](imperialsetup/) | Audit, lập kế hoạch và reconcile cấu trúc/permission server theo blueprint | `[p]deche` |
+| [`developmentops`](developmentops/) | GitHub webhook, feed, PR review thread và Discord Forum ↔ GitHub Issue | `[p]devset` |
+| [`botops`](botops/) | Audit log, incident/error reporting và traceback đã redact | `[p]botops` |
+| [`imperialautomation`](imperialautomation/) | RSS/digest, Audio controls, queue quota, now-playing panel và private listening room | `[p]ia` |
+| [`studyops`](studyops/) | Daily goals, Pomodoro, study log, weekly progress và temporary study rooms | `[p]studyset` |
+| [`musicstatus`](musicstatus/) | Bảng health định kỳ cho Red, latency, uptime, Lavalink và active music rooms | `[p]musicstatus` |
 
-Giải nén sao cho có:
+> [!IMPORTANT]
+> `[p]` là prefix của Red. Nếu prefix là `!`, `[p]help` nghĩa là `!help`. Các lệnh này được gửi **trong Discord**, không phải CMD/PowerShell/terminal.
 
-```text
-C:\red-cogs\
-└─ imperialsetup\
-   ├─ __init__.py
-   ├─ blueprint.py
-   ├─ imperialsetup.py
-   └─ info.json
-```
+## Bắt đầu
 
-Trong Discord, thay `!` bằng prefix thật:
+### 1. Cài Red và tạo bot
 
-```text
-!addpath C:\red-cogs
-!reload imperialsetup
-```
+Xem hướng dẫn đầy đủ cho Discord application, Windows 10/11 và Ubuntu 24.04:
 
-Nếu đây là lần đầu cài:
+**[docs/INSTALLATION.md](docs/INSTALLATION.md)**
 
-```text
-!load imperialsetup
-```
+### 2. Thêm repository
 
-## Flow khuyến nghị
+Chạy bằng tài khoản Red bot owner trong Discord:
 
 ```text
-!deche audit
-!deche plan
-!deche auto CONFIRM
-!deche status
+[p]load downloader
+[p]repo add red-cogs https://github.com/Dyu20705/red-cogs
+[p]cog list red-cogs
 ```
 
-`auto` chạy lần lượt:
-
-1. Reconcile: dùng lại phần đã dựng, tạo phần thiếu.
-2. Optimize: chuẩn hóa permission và bố cục phần được nhận diện.
-3. Launch: đăng starter content vào channel trống và tạo dashboard.
-
-Có thể chạy từng bước:
+Cài đúng cog bạn cần, ví dụ:
 
 ```text
-!deche reconcile CONFIRM
-!deche optimize CONFIRM
-!deche launch CONFIRM
+[p]cog install red-cogs imperialsetup
+[p]cog install red-cogs botops
+[p]cog install red-cogs developmentops
+[p]load imperialsetup
+[p]load botops
+[p]load developmentops
 ```
 
-## Với server trong ảnh của bạn
+Không nên load cả sáu cog chỉ vì chúng tồn tại. Mỗi cog thêm permission, trạng thái và log cần vận hành.
 
-Cog sẽ cố gắng tái sử dụng:
-
-- `About` → `📜 ABOUT`
-- `NỘI CÁC` → `🔒 NỘI CÁC`
-- `Bot` → `🤖 BOT`
-- `NGỰ UYỂN` → `🌿 NGỰ UYỂN`
-- `STUDY` → `📚 STUDY`
-- `DEVELOPMENT` → `💻 DEVELOPMENT`
-- `FEEDS` → `📰 FEEDS`
-- `bot-errors` được giữ và khóa quyền đúng.
-- `Nhạc Phường` được giữ và cấp Connect/Speak cho bot.
-- `MIU R|C` được giữ nguyên vì mục đích chưa đủ rõ để tự gộp/xóa.
-
-## Permission bot cần
-
-- Manage Roles
-- Manage Channels
-- View Channels
-- Send Messages
-- Embed Links
-- Attach Files
-- Read Message History
-- Connect
-- Speak
-
-`Manage Server` là tùy chọn; nếu có, cog sẽ đặt voice `AFK` làm AFK channel.
-
-Không cần cấp Administrator.
-
-
-## Sửa lỗi 403 Forbidden ở v2.1
-
-Discord chỉ cho bot cấp những permission mà chính bot đang có. Bản cũ có thể cố
-gán quyền quản trị bổ sung cho Nội Các/Cận Vệ hoặc channel overwrite, khiến API
-trả về 403 dù Manage Roles và Manage Channels đã bật.
-
-v2.1 tự lọc các quyền không khả dụng, hoàn thành phần còn lại thay vì dừng toàn bộ.
-
-Nâng cấp:
+## ImperialSetup: luồng an toàn
 
 ```text
-!reload imperialsetup
-!deche audit
-!deche reconcile CONFIRM
+[p]deche diagnose
+[p]deche audit
+[p]deche plan
+[p]deche reconcile CONFIRM
+[p]deche status
 ```
 
-
-## v2.2: channel-aware permission checks
-
-Discord evaluates channel overwrite changes against the bot's effective permissions
-in the channel or parent category, not only the role's global permission toggles.
-
-New command:
+Chỉ chạy chuẩn hóa mạnh sau khi đã review plan và backup:
 
 ```text
-!deche diagnose
+[p]deche optimize CONFIRM
+[p]deche launch CONFIRM
 ```
 
-It reports:
+Hardening layer chỉ thay overwrite thuộc blueprint (`@everyone`, Quân Vương, Nội Các, Cận Vệ và bot). Overwrite của role/member tùy chỉnh được giữ lại; mutation dừng khi nhiều channel cùng khớp một tên/alias.
 
-- bot top-role position
-- whether every managed role is below the bot
-- effective Manage Channels and Manage Roles in each category/channel
-- the exact API operation, HTTP status, and Discord error code after a 403
+## Permission model
 
-Recommended recovery flow:
+Không cấp `Administrator` mặc định. Role bot phải nằm cao hơn role mà cog cần quản lý. ImperialSetup thường cần:
 
-```text
-!reload imperialsetup
-!deche diagnose
-!deche reconcile CONFIRM
+- Manage Roles, Manage Channels
+- View Channels, Send Messages, Embed Links
+- Attach Files, Read Message History
+- Connect, Speak
+
+`Manage Server` chỉ cần nếu muốn cog tự đặt AFK channel.
+
+## DevelopmentOps security
+
+- Webhook payload được xác minh bằng HMAC SHA-256.
+- Listener mặc định bind `127.0.0.1:8765`.
+- Chỉ đưa `/github` ra Internet qua HTTPS reverse proxy/tunnel có kiểm soát.
+- Credential GitHub và webhook secret được đọc từ process environment, không lưu trong Red Config.
+- Forum sync có thể chuyển nội dung, attachment URL và creator ID sang GitHub Issue; chỉ bật khi thành viên đã được thông báo.
+
+Xem **[docs/DEVELOPMENTOPS.md](docs/DEVELOPMENTOPS.md)**.
+
+## Tài liệu
+
+- [Cài Discord application và Red trên Windows/Ubuntu](docs/INSTALLATION.md)
+- [Update, backup, restore, logs, rollback và troubleshooting](docs/OPERATIONS.md)
+- [Triển khai DevelopmentOps](docs/DEVELOPMENTOPS.md)
+- [Architecture audit và thiết kế vNext](docs/ARCHITECTURE.md)
+- [Tools và chiến lược tự động hóa server](docs/TOOLS.md)
+- [Security policy](SECURITY.md)
+- [Contributing guide](CONTRIBUTING.md)
+- [Changelog](CHANGELOG.md)
+
+## Kiểm tra chất lượng
+
+```bash
+python scripts/validate_repo.py
+python -m unittest discover -s tests -v
+python -m compileall -q imperialsetup developmentops botops imperialautomation studyops musicstatus scripts tests
 ```
+
+CI kiểm tra metadata của mọi cog, collision trong blueprint, Python syntax, link nội bộ, mẫu credential có độ tin cậy cao và unit test.
+
+## Giới hạn đã biết
+
+- ImperialSetup vẫn nhận diện resource chủ yếu bằng tên/alias; vNext nên lưu resource ID và schema version.
+- Một số cog còn là file lớn, trộn nhiều trách nhiệm.
+- DevelopmentOps có receiver và queue in-process; dedupe không bền qua restart và timezone hiện cố định UTC+7.
+- Discord không có transaction đa bước; backup và `audit → plan` vẫn bắt buộc.
+
+## License
+
+Phát hành theo [MIT License](LICENSE).
