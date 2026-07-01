@@ -1,0 +1,19 @@
+{
+  "repo": "https://github.com/Dyu20705/red-cogs",
+  "instance": "YOUR_INSTANCE",
+  "prefix_example": "[p]",
+  "developmentops": {
+    "public_domain": "YOUR_DOMAIN",
+    "receiver_host": "127.0.0.1",
+    "receiver_port": 8765,
+    "webhook_secret": "CHANGE_ME"
+  },
+  "cogs": [
+    "imperialsetup",
+    "developmentops",
+    "botops",
+    "imperialautomation",
+    "studyops",
+    "musicstatus"
+  ]
+}
