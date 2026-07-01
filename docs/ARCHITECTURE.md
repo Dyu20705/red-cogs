@@ -1,15 +1,47 @@
-# Architecture review and vNext design
+# Architecture
 
-## Repository boundaries
+This repository is six independent Red-DiscordBot cogs plus development and
+operations tooling. Downloader must be able to install each cog on its own.
 
-The repository contains two separate systems:
+## Repository Boundaries
+
+| Cog | Boundary |
+|---|---|
+| ImperialSetup | Discord server structure audit, planning, reconcile, launch content, and permission hardening. |
+| DevelopmentOps | GitHub webhook ingress, GitHub API rendering, PR review threads, Forum/Issue mapping, and scheduled development goals. |
+| BotOps | Audit records, redacted incident logs, retention cleanup, and deep health diagnostics. |
+| ImperialAutomation | RSS/Atom filtering, digest posts, Audio command guardrails, now-playing panel, and private listening rooms. |
+| StudyOps | Goals, Pomodoro, progress tracking, study logs, scheduled reports, and temporary study rooms. |
+| MusicStatus | Persistent bot/music health panel for Red, latency, uptime, Lavalink, and active music rooms. |
+
+## Interaction Map
 
 ```text
-ImperialSetup: desired Discord structure -> audit/plan -> controlled mutation
-DevelopmentOps: GitHub events/API -> normalize/route -> Discord workflows
+GitHub -> DevelopmentOps receiver -> Discord channels/forums/threads
+Discord -> ImperialSetup -> roles/categories/channels/overwrites
+Discord -> BotOps -> audit/error/log channels and local incident files
+Discord -> StudyOps -> Red Config and temporary voice channels
+RSS/Atom -> ImperialAutomation -> Discord feeds/threads
+Red Audio -> ImperialAutomation/MusicStatus -> music panels and controls
+Lavalink -> Red Audio -> ImperialAutomation/MusicStatus
 ```
 
-Keeping them as separate cogs is correct. They share a server, but their failure modes, permissions, data handling, and test strategies are different.
+BotOps is an optional reporting integration used by other cogs when loaded. A
+missing BotOps cog must not prevent the other cogs from operating.
+
+## Dependency Graph
+
+```text
+imperialsetup -> discord.py, Red Config, local blueprint/helpers
+developmentops -> aiohttp, GitHub HTTP API, discord.py, Red Config
+botops -> discord.py, Red Config, cog data path
+imperialautomation -> aiohttp/feedparser, Red Audio events, Lavalink optional
+studyops -> discord.py, Red Config
+musicstatus -> Lavalink optional, discord.py, Red Config
+```
+
+No shared runtime package is required at repository root. Small pure helpers may
+be duplicated or kept inside cog packages so Downloader installs remain safe.
 
 ## ImperialSetup audit
 
@@ -67,7 +99,7 @@ imperialsetup/
 
 After the first reconciliation, store resource IDs and a schema version in Red Config. A pure planner should return typed actions such as `CreateRole`, `MoveChannel`, and `PatchOverwrite`; only the executor should call Discord APIs.
 
-## DevelopmentOps audit
+## DevelopmentOps Audit
 
 ### Strengths
 
@@ -94,7 +126,7 @@ After the first reconciliation, store resource IDs and a schema version in Red C
 ```text
 developmentops/
 ├─ commands.py
-├─ config.py
+├─ settings.py
 ├─ receiver.py
 ├─ security.py
 ├─ dispatcher.py
@@ -111,6 +143,10 @@ For a personal server, an in-process listener is acceptable when kept on loopbac
 ```text
 GitHub -> HTTPS ingress -> durable queue -> Red consumer
 ```
+
+Current vNext helpers cover safe environment parsing, HMAC verification, bounded
+delivery dedupe, bounded webhook queue dispatch, task tracking, and per-guild
+timezone defaults.
 
 ## Shared design principles
 
