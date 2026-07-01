@@ -1,4 +1,6 @@
-from .botops import BotOps
+"""BotOps package entry point."""
+
+from .automation import BotOps
 
 
 async def setup(bot):
