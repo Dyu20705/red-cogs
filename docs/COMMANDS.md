@@ -72,10 +72,11 @@ Do not edit command rows by hand.
 | imperialsetup | `[p]deche plan` | command | `plan` | `kehoach` | - | `imperialsetup/imperialsetup.py:69` | Show exactly what the reconciler intends to do. |
 | imperialsetup | `[p]deche reconcile` | command | `reconcile` | `sync`, `dongbo` | bot permissions | `imperialsetup/imperialsetup.py:83` | Reuse/move/rename matching objects and create only missing objects. Existing channel permission overwrites and existing messages are preserved. |
 | imperialsetup | `[p]deche status` | command | `status` | - | - | `imperialsetup/imperialsetup.py:243` | Display concise readiness status after setup. |
-| musicstatus | `[p]musicstatus` | group | `musicstatus` | - | guild only, admin/manage guild | `musicstatus/musicstatus.py:54` | Cấu hình bảng trạng thái Music-Bot. |
-| musicstatus | `[p]musicstatus now` | command | `update_now` | - | - | `musicstatus/musicstatus.py:99` | Cập nhật trạng thái ngay lập tức. |
-| musicstatus | `[p]musicstatus reset` | command | `reset_status` | - | - | `musicstatus/musicstatus.py:119` | Xóa cấu hình bảng trạng thái. |
-| musicstatus | `[p]musicstatus setchannel` | command | `set_channel` | - | - | `musicstatus/musicstatus.py:61` | Chọn channel đăng trạng thái. |
+| musicstatus | `[p]musicstatus` | group | `musicstatus` | - | guild only, admin/manage guild | `musicstatus/musicstatus.py:66` | Configure the Music-Bot status and live command panels. |
+| musicstatus | `[p]musicstatus commands` | command | `update_commands` | `command`, `cmds` | - | `musicstatus/musicstatus.py:126` | Refresh the live command index only. |
+| musicstatus | `[p]musicstatus now` | command | `update_now` | `refresh` | - | `musicstatus/musicstatus.py:108` | Refresh both status and command panels immediately. |
+| musicstatus | `[p]musicstatus reset` | command | `reset_status` | - | - | `musicstatus/musicstatus.py:135` | Delete tracked dashboard messages and clear configuration. |
+| musicstatus | `[p]musicstatus setchannel` | command | `set_channel` | - | - | `musicstatus/musicstatus.py:73` | Choose the channel for both status and command panels. |
 | studyops | `[p]goal` | group | `goal` | - | guild only | `studyops/studyops.py:403` | Manage today's goals. |
 | studyops | `[p]goal add` | command | `goal_add` | - | - | `studyops/studyops.py:410` | Add one goal for today. |
 | studyops | `[p]goal carry` | command | `goal_carry` | - | - | `studyops/studyops.py:489` | Carry unfinished goals from yesterday into today. |
