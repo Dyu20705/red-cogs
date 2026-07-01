@@ -36,10 +36,7 @@ class StudyOps(BaseStudyOps):
         guild: discord.Guild,
         *names: str,
     ) -> discord.TextChannel | None:
-        expected = {
-            self._normalise_channel_name(name)
-            for name in names
-        }
+        expected = {self._normalise_channel_name(name) for name in names}
         return next(
             (
                 channel
@@ -85,6 +82,96 @@ class StudyOps(BaseStudyOps):
         for guild in self.bot.guilds:
             with contextlib.suppress(Exception):
                 await self._bind_default_channels(guild)
+
+    @commands.group(name="leetcode")
+    @commands.guild_only()
+    @commands.admin_or_permissions(manage_guild=True)
+    async def leetcode(self, ctx: commands.Context):
+        """Configure automatic LeetCode reminders."""
+
+        if ctx.invoked_subcommand is None:
+            await self._send_leetcode_status(ctx)
+
+    @leetcode.command(name="channel")
+    async def leetcode_channel(
+        self,
+        ctx: commands.Context,
+        channel: discord.TextChannel,
+    ):
+        """Set the LeetCode reminder channel."""
+
+        missing = self._missing_text_permissions(channel)
+        if missing:
+            await ctx.send(
+                f"❌ Bot thiếu quyền trong {channel.mention}: "
+                f"**{', '.join(missing)}**"
+            )
+            return
+
+        await self.config.guild(ctx.guild).leetcode_channel_id.set(channel.id)
+        await ctx.send(f"✅ LeetCode reminders: {channel.mention}")
+
+    @leetcode.command(name="schedule")
+    async def leetcode_schedule(
+        self,
+        ctx: commands.Context,
+        hour: int,
+        minute: int = 0,
+    ):
+        """Set the daily LeetCode reminder time in UTC+7."""
+
+        if not 0 <= hour <= 23 or not 0 <= minute <= 59:
+            await ctx.send("❌ Giờ/phút không hợp lệ.")
+            return
+
+        guild_conf = self.config.guild(ctx.guild)
+        await guild_conf.leetcode_hour.set(hour)
+        await guild_conf.leetcode_minute.set(minute)
+        await ctx.send(f"✅ LeetCode reminder: **{hour:02d}:{minute:02d} UTC+7**")
+
+    @leetcode.command(name="enable")
+    async def leetcode_enable(self, ctx: commands.Context, enabled: bool):
+        """Enable or disable automatic LeetCode reminders."""
+
+        await self.config.guild(ctx.guild).leetcode_enabled.set(enabled)
+        await ctx.send(
+            "✅ LeetCode reminders: " + ("**enabled**" if enabled else "**disabled**")
+        )
+
+    @leetcode.command(name="now", aliases=["postnow", "test"])
+    async def leetcode_now(self, ctx: commands.Context):
+        """Post the LeetCode reminder immediately."""
+
+        success = await self.post_leetcode_daily(ctx.guild, force=True)
+        if success:
+            await ctx.tick()
+        else:
+            await ctx.send(
+                "❌ Không thể đăng LeetCode reminder. Hãy kiểm tra channel và quyền bot."
+            )
+
+    @leetcode.command(name="status")
+    async def leetcode_status(self, ctx: commands.Context):
+        """Show LeetCode reminder configuration."""
+
+        await self._send_leetcode_status(ctx)
+
+    async def _send_leetcode_status(self, ctx: commands.Context) -> None:
+        await self._bind_default_channels(ctx.guild)
+        data = await self.config.guild(ctx.guild).all()
+        channel_id = data.get("leetcode_channel_id")
+        channel = ctx.guild.get_channel(channel_id) if channel_id else None
+        channel_text = channel.mention if isinstance(channel, discord.TextChannel) else "Not configured"
+
+        await ctx.send(
+            "**🧩 LEETCODE AUTOMATION**\n\n"
+            f"Channel: {channel_text}\n"
+            f"Enabled: `{bool(data.get('leetcode_enabled', True))}`\n"
+            f"Schedule: `{int(data.get('leetcode_hour', 8)):02d}:"
+            f"{int(data.get('leetcode_minute', 0)):02d} UTC+7`\n"
+            f"Last post: `{data.get('last_leetcode_post') or 'Never'}`",
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
 
     async def post_leetcode_daily(
         self,
