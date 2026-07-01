@@ -1,6 +1,6 @@
 """DevelopmentOps cog package."""
 
-from .developmentops import DevelopmentOps
+from .hardening import DevelopmentOps
 
 __red_end_user_data_statement__ = (
     "This cog stores guild/channel/thread IDs, GitHub repository names, Forum/Issue "

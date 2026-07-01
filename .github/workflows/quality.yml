@@ -18,24 +18,50 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Clone source
-        shell: bash
-        run: |
-          BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
-          git clone --quiet --depth 1 --branch "$BRANCH" \
-            "https://github.com/$GITHUB_REPOSITORY.git" source
+      - name: Checkout source
+        uses: actions/checkout@v4
 
       - name: Validate repository
-        working-directory: source
         run: python3 scripts/validate_repo.py
 
       - name: Run unit tests
-        working-directory: source
         run: python3 -m unittest discover -s tests -v
 
       - name: Compile Python sources
-        working-directory: source
         run: >-
           python3 -m compileall -q
           imperialsetup developmentops botops imperialautomation studyops musicstatus
           scripts tests
+
+      - name: Check generated docs
+        run: |
+          python3 scripts/generate_command_reference.py
+          git diff --exit-code docs/COMMANDS.md
+
+      - name: Shell syntax
+        run: bash -n scripts/linux/*.sh
+
+      - name: Tool smoke tests
+        run: |
+          python3 scripts/redctl.py --help
+          python3 scripts/redctl.py doctor --json
+          python3 scripts/redctl.py check
+
+  windows-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Tool smoke tests
+        shell: pwsh
+        run: |
+          python scripts/redctl.py --help
+          python scripts/redctl.py doctor --json
+          Get-ChildItem scripts/windows/*.ps1 | ForEach-Object {
+            $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content $_ -Raw), [ref]$null)
+          }
+          if ((Get-ChildItem scripts/windows/*.bat).Count -lt 4) {
+            throw "Missing Windows batch wrappers"
+          }

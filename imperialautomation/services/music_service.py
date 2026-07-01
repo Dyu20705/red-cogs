@@ -55,6 +55,7 @@ class MusicService:
         self.bot = cog.bot
         self.empty_since: Dict[int, datetime] = {}
         self.room_delete_tasks: Dict[int, asyncio.Task] = {}
+        self.message_cleanup_tasks: Set[asyncio.Task] = set()
 
     def start(self):
         self.panel_loop.start()
@@ -66,6 +67,8 @@ class MusicService:
         self.disconnect_loop.cancel()
         self.room_sweeper.cancel()
         for task in list(self.room_delete_tasks.values()):
+            task.cancel()
+        for task in list(self.message_cleanup_tasks):
             task.cancel()
 
     async def global_command_gate(self, ctx: commands.Context) -> bool:
@@ -289,7 +292,9 @@ class MusicService:
             with contextlib.suppress(discord.HTTPException):
                 await message.delete()
 
-        asyncio.create_task(delete_later())
+        task = asyncio.create_task(delete_later())
+        self.message_cleanup_tasks.add(task)
+        task.add_done_callback(self.message_cleanup_tasks.discard)
 
     @tasks.loop(seconds=15)
     async def panel_loop(self):

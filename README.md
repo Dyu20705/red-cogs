@@ -97,10 +97,16 @@ Xem **[docs/DEVELOPMENTOPS.md](docs/DEVELOPMENTOPS.md)**.
 
 ## Tài liệu
 
+- [Command reference tự generate](docs/COMMANDS.md)
+- [Cheatsheet thao tác nhanh](docs/CHEATSHEET.md)
 - [Cài Discord application và Red trên Windows/Ubuntu](docs/INSTALLATION.md)
 - [Update, backup, restore, logs, rollback và troubleshooting](docs/OPERATIONS.md)
 - [Triển khai DevelopmentOps](docs/DEVELOPMENTOPS.md)
-- [Architecture audit và thiết kế vNext](docs/ARCHITECTURE.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Development](docs/DEVELOPMENT.md)
+- [Data handling](docs/DATA_HANDLING.md)
+- [Upgrade guide](docs/UPGRADE.md)
+- [Runtime smoke test plan](docs/RUNTIME_TEST_PLAN.md)
 - [Tools và chiến lược tự động hóa server](docs/TOOLS.md)
 - [Security policy](SECURITY.md)
 - [Contributing guide](CONTRIBUTING.md)
@@ -109,12 +115,10 @@ Xem **[docs/DEVELOPMENTOPS.md](docs/DEVELOPMENTOPS.md)**.
 ## Kiểm tra chất lượng
 
 ```bash
-python scripts/validate_repo.py
-python -m unittest discover -s tests -v
-python -m compileall -q imperialsetup developmentops botops imperialautomation studyops musicstatus scripts tests
+python scripts/redctl.py check
 ```
 
-CI kiểm tra metadata của mọi cog, collision trong blueprint, Python syntax, link nội bộ, mẫu credential có độ tin cậy cao và unit test.
+CI kiểm tra metadata, unit test, Python syntax, generated docs freshness, shell syntax, và smoke checks cho tooling.
 
 ## Giới hạn đã biết
 

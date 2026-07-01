@@ -3,15 +3,12 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-import hashlib
-import hmac
 import json
-import os
 import re
-from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 from urllib.parse import quote
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import aiohttp
 from aiohttp import web
@@ -19,6 +16,10 @@ import discord
 from discord.ext import tasks
 from red_commons.logging import getLogger
 from redbot.core import Config, commands
+
+from .dedupe import DeliveryDedupe
+from .security import verify_github_signature
+from .settings import DevelopmentOpsSettings
 
 
 log = getLogger("red.developmentops")
@@ -74,6 +75,7 @@ class DevelopmentOps(commands.Cog):
             daily_goals_channel_id=None,
             daily_hour=7,
             daily_minute=5,
+            timezone="Asia/Bangkok",
             milestone_title=None,
             review_label="review-needed",
             daily_labels=["daily-goal", "weekly-goal"],
@@ -84,27 +86,58 @@ class DevelopmentOps(commands.Cog):
             issue_to_forum={},
         )
 
-        self.webhook_secret = os.getenv("DEVELOPMENTOPS_WEBHOOK_SECRET", "")
-        self.github_token = os.getenv("DEVELOPMENTOPS_GITHUB_TOKEN", "")
-        self.web_host = os.getenv("DEVELOPMENTOPS_HOST", "127.0.0.1")
-        self.web_port = int(os.getenv("DEVELOPMENTOPS_PORT", "8765"))
+        self.settings = DevelopmentOpsSettings.from_env()
+        self.webhook_secret = self.settings.webhook_secret
+        self.github_token = self.settings.github_token
+        self.web_host = self.settings.host
+        self.web_port = self.settings.port
 
         self.http_session: Optional[aiohttp.ClientSession] = None
         self.web_runner: Optional[web.AppRunner] = None
         self.web_site: Optional[web.TCPSite] = None
         self.web_start_error: Optional[str] = None
 
-        self.recent_deliveries: OrderedDict[str, datetime] = OrderedDict()
-        self.web_start_task = asyncio.create_task(self._start_webserver())
+        self.delivery_dedupe = DeliveryDedupe(ttl_seconds=24 * 3600, max_size=1000)
+        self.webhook_queue: asyncio.Queue[Dict[str, Any]] = asyncio.Queue(maxsize=100)
+        self._tasks: set[asyncio.Task] = set()
+        self.web_start_task = self._track_task(
+            self._start_webserver(),
+            "start DevelopmentOps receiver",
+        )
+        self.web_worker_task = self._track_task(
+            self._webhook_worker(),
+            "DevelopmentOps webhook worker",
+        )
         self.daily_loop.start()
 
     def cog_unload(self):
         self.daily_loop.cancel()
 
-        if self.web_start_task is not None:
-            self.web_start_task.cancel()
+        for task in list(self._tasks):
+            task.cancel()
 
-        asyncio.create_task(self._close_resources())
+        self._track_task(self._close_resources(), "close DevelopmentOps resources")
+
+    def _track_task(self, awaitable, label: str) -> asyncio.Task:
+        task = asyncio.create_task(awaitable)
+        self._tasks.add(task)
+
+        def _done(done: asyncio.Task) -> None:
+            self._tasks.discard(done)
+            if done.cancelled():
+                return
+            with contextlib.suppress(Exception):
+                exc = done.exception()
+                if exc is not None:
+                    log.error(
+                        "DevelopmentOps task failed: %s: %s",
+                        label,
+                        exc.__class__.__name__,
+                        exc_info=exc,
+                    )
+
+        task.add_done_callback(_done)
+        return task
 
     async def _close_resources(self):
         if self.web_runner is not None:
@@ -394,7 +427,7 @@ class DevelopmentOps(commands.Cog):
         hour: int,
         minute: int = 5,
     ):
-        """Set the morning DEVELOPMENT GOALS time in UTC+7."""
+        """Set the morning DEVELOPMENT GOALS time in the configured timezone."""
 
         if not 0 <= hour <= 23 or not 0 <= minute <= 59:
             await ctx.send("❌ Giờ hoặc phút không hợp lệ.")
@@ -413,7 +446,29 @@ class DevelopmentOps(commands.Cog):
             f"{old_hour:02d}:{old_minute:02d}",
             f"{hour:02d}:{minute:02d}",
         )
-        await ctx.send(f"✅ DEVELOPMENT GOALS: **{hour:02d}:{minute:02d} UTC+7**")
+        tz_name = await guild_conf.timezone()
+        await ctx.send(f"✅ DEVELOPMENT GOALS: **{hour:02d}:{minute:02d} {tz_name}**")
+
+    @devset.command(name="timezone")
+    async def devset_timezone(self, ctx: commands.Context, timezone_name: str):
+        """Set the DEVELOPMENT GOALS timezone, e.g. Asia/Bangkok."""
+
+        timezone_name = timezone_name.strip()
+        try:
+            ZoneInfo(timezone_name)
+        except ZoneInfoNotFoundError:
+            await ctx.send("❌ Timezone không hợp lệ. Ví dụ: `Asia/Bangkok`.")
+            return
+
+        old_value = await self.config.guild(ctx.guild).timezone()
+        await self.config.guild(ctx.guild).timezone.set(timezone_name)
+        await self._audit(
+            ctx,
+            "Changed DevelopmentOps timezone",
+            old_value,
+            timezone_name,
+        )
+        await ctx.send(f"✅ DevelopmentOps timezone: **{timezone_name}**")
 
     @devset.command(name="status")
     async def devset_status(self, ctx: commands.Context):
@@ -446,7 +501,7 @@ class DevelopmentOps(commands.Cog):
             f"Code review: {channel_text('code_review_channel_id')}\n"
             f"Bugs Forum: {channel_text('bugs_forum_channel_id')}\n"
             f"Daily goals: {channel_text('daily_goals_channel_id')}\n"
-            f"Schedule: `{data['daily_hour']:02d}:{data['daily_minute']:02d} UTC+7`\n"
+            f"Schedule: `{data['daily_hour']:02d}:{data['daily_minute']:02d} {data.get('timezone', 'Asia/Bangkok')}`\n"
             f"Milestone: `{data['milestone_title'] or 'none'}`\n"
             f"Review label: `{data['review_label']}`\n"
             f"Forum sync: `{data['forum_sync_enabled']}`\n"
@@ -502,6 +557,11 @@ class DevelopmentOps(commands.Cog):
     async def _start_webserver(self):
         await self.bot.wait_until_ready()
 
+        if not self.settings.receiver_enabled:
+            self.web_start_error = "; ".join(self.settings.warnings) or "receiver disabled"
+            log.warning(self.web_start_error)
+            return
+
         if not self.webhook_secret:
             self.web_start_error = (
                 "DEVELOPMENTOPS_WEBHOOK_SECRET is not set; receiver disabled"
@@ -551,13 +611,7 @@ class DevelopmentOps(commands.Cog):
         raw_body = await request.read()
         signature = request.headers.get("X-Hub-Signature-256", "")
 
-        expected = "sha256=" + hmac.new(
-            self.webhook_secret.encode("utf-8"),
-            raw_body,
-            hashlib.sha256,
-        ).hexdigest()
-
-        if not signature or not hmac.compare_digest(expected, signature):
+        if not verify_github_signature(self.webhook_secret, raw_body, signature):
             return web.json_response(
                 {"ok": False, "error": "invalid signature"},
                 status=403,
@@ -580,35 +634,43 @@ class DevelopmentOps(commands.Cog):
                 status=400,
             )
 
-        asyncio.create_task(
-            self._dispatch_webhook(
-                event=event,
-                payload=payload,
-                delivery_id=delivery_id,
+        try:
+            self.webhook_queue.put_nowait(
+                {
+                    "event": event,
+                    "payload": payload,
+                    "delivery_id": delivery_id,
+                }
             )
-        )
+        except asyncio.QueueFull:
+            return web.json_response(
+                {"ok": False, "error": "webhook queue full"},
+                status=503,
+            )
 
         return web.json_response({"ok": True}, status=202)
 
     def _delivery_seen(self, delivery_id: str) -> bool:
-        now = datetime.now(timezone.utc)
-        cutoff = now - timedelta(hours=24)
+        return self.delivery_dedupe.seen(delivery_id)
 
-        while self.recent_deliveries:
-            first_key = next(iter(self.recent_deliveries))
-            if self.recent_deliveries[first_key] >= cutoff:
-                break
-            self.recent_deliveries.popitem(last=False)
-
-        if delivery_id in self.recent_deliveries:
-            return True
-
-        self.recent_deliveries[delivery_id] = now
-
-        while len(self.recent_deliveries) > 1000:
-            self.recent_deliveries.popitem(last=False)
-
-        return False
+    async def _webhook_worker(self):
+        await self.bot.wait_until_ready()
+        while True:
+            item = await self.webhook_queue.get()
+            try:
+                await self._dispatch_webhook(
+                    event=str(item.get("event") or ""),
+                    payload=item.get("payload") or {},
+                    delivery_id=str(item.get("delivery_id") or ""),
+                )
+            except Exception as exc:
+                log.error(
+                    "DevelopmentOps webhook dispatch failed: %s",
+                    exc.__class__.__name__,
+                    exc_info=exc,
+                )
+            finally:
+                self.webhook_queue.task_done()
 
     async def _dispatch_webhook(
         self,
@@ -1765,13 +1827,14 @@ class DevelopmentOps(commands.Cog):
 
     @tasks.loop(seconds=60)
     async def daily_loop(self):
-        now = datetime.now(VN_TZ)
         all_guilds = await self.config.all_guilds()
 
         for guild_id, data in all_guilds.items():
             guild = self.bot.get_guild(int(guild_id))
             if guild is None:
                 continue
+
+            now = datetime.now(self._guild_timezone(data))
 
             today_key = now.strftime(DAY_FMT)
 
@@ -1799,6 +1862,13 @@ class DevelopmentOps(commands.Cog):
     async def before_daily_loop(self):
         await self.bot.wait_until_ready()
 
+    @staticmethod
+    def _guild_timezone(data: Dict[str, Any]):
+        try:
+            return ZoneInfo(str(data.get("timezone") or "Asia/Bangkok"))
+        except ZoneInfoNotFoundError:
+            return ZoneInfo("Asia/Bangkok")
+
     async def _post_development_goals(
         self,
         guild: discord.Guild,
@@ -1809,6 +1879,8 @@ class DevelopmentOps(commands.Cog):
         channel_id = await guild_conf.daily_goals_channel_id()
         channel = guild.get_channel(channel_id) if channel_id else None
         repository = await guild_conf.primary_repo()
+        data = await guild_conf.all()
+        guild_tz = self._guild_timezone(data)
 
         if not isinstance(channel, discord.TextChannel) or not repository:
             return
@@ -1894,7 +1966,7 @@ class DevelopmentOps(commands.Cog):
                 ][:5]
 
         lines = [
-            f"💻 **DEVELOPMENT GOALS — {datetime.now(VN_TZ).strftime('%d/%m/%Y')}**",
+            f"💻 **DEVELOPMENT GOALS — {datetime.now(guild_tz).strftime('%d/%m/%Y')}**",
             "",
             f"Repository: **{repository}**",
             "",
@@ -1966,7 +2038,7 @@ class DevelopmentOps(commands.Cog):
 
         if not force:
             await guild_conf.last_daily_post.set(
-                datetime.now(VN_TZ).strftime(DAY_FMT)
+                datetime.now(guild_tz).strftime(DAY_FMT)
             )
 
     # ------------------------------------------------------------------
