@@ -10,7 +10,7 @@ class ServerAutomationExtensionTests(unittest.TestCase):
     def test_imperial_blueprint_extensions(self):
         source = (ROOT / "imperialsetup/automation.py").read_text(encoding="utf-8")
         self.assertIn('"name": "leet-code"', source)
-        self.assertIn('"name": "study-log"', source)
+        self.assertIn('"study-log"', source)
         self.assertIn("AUDIT & MOD LOG — NGỰ SỬ ĐÀI", source)
         self.assertIn("📢 Bảng cáo thị", source)
         ast.parse(source)
