@@ -14,6 +14,8 @@ from discord.ext import tasks
 from redbot.core import Config, commands
 from redbot.core.data_manager import cog_data_path
 
+from .health import build_health_snapshot
+
 
 VN_TZ = timezone(timedelta(hours=7), name="UTC+7")
 
@@ -238,6 +240,16 @@ class BotOps(commands.Cog):
                 )
 
         await ctx.tick()
+
+    @botops.command(name="health", aliases=["doctor"])
+    async def health(self, ctx: commands.Context):
+        """Show a deep, redacted bot health diagnostic."""
+
+        snapshot = build_health_snapshot(self.bot)
+        await ctx.send(
+            "\n".join(snapshot.as_lines())[:1900],
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
 
     @botops.command(name="cleanupnow")
     async def cleanup_now(self, ctx: commands.Context):
