@@ -91,6 +91,22 @@ class DeliveryDedupeTests(unittest.TestCase):
         self.assertEqual(len(cache), 2)
         self.assertFalse(cache.seen("a", now=now))
 
+    def test_rejected_delivery_is_not_committed(self):
+        cache = dedupe.DeliveryDedupe(ttl_seconds=100, max_size=10)
+        now = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        self.assertFalse(cache.contains("delivery-1", now=now))
+        # A queue-full response must leave the delivery uncommitted so a retry is accepted.
+        self.assertFalse(cache.contains("delivery-1", now=now + timedelta(seconds=1)))
+        cache.remember("delivery-1", now=now + timedelta(seconds=2))
+        self.assertTrue(cache.contains("delivery-1", now=now + timedelta(seconds=3)))
+
+    def test_discard_allows_retry(self):
+        cache = dedupe.DeliveryDedupe(ttl_seconds=100, max_size=10)
+        cache.remember("delivery-2")
+        self.assertTrue(cache.contains("delivery-2"))
+        cache.discard("delivery-2")
+        self.assertFalse(cache.contains("delivery-2"))
+
 
 if __name__ == "__main__":
     unittest.main()
