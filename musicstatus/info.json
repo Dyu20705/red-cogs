@@ -2,16 +2,18 @@
   "author": [
     "Nguyễn Văn Duy"
   ],
-  "description": "Hourly Red and Lavalink status panel for Discord, including bot health, latency, uptime, Audio node state, and active music rooms.",
-  "install_msg": "Load with `[p]load musicstatus`, then configure a destination using `[p]musicstatus setchannel #bot-status` and verify it with `[p]musicstatus now`.",
-  "short": "Persistent music-bot health and status panel.",
+  "description": "Persistent Red and Lavalink dashboard for Discord, including bot health, latency, uptime, Audio node state, active music rooms, and a live command index generated from currently loaded cogs.",
+  "install_msg": "Load with `[p]load musicstatus`, configure `[p]musicstatus setchannel #bot-status`, then refresh both panels with `[p]musicstatus now`. Use `[p]musicstatus commands` to refresh only the live command index.",
+  "short": "Persistent bot health and live command dashboard.",
   "requirements": [],
   "tags": [
     "music",
     "audio",
     "status",
     "monitoring",
-    "lavalink"
+    "lavalink",
+    "commands",
+    "dashboard"
   ],
   "type": "COG",
   "min_bot_version": "3.5.0",
@@ -20,5 +22,5 @@
     11,
     0
   ],
-  "end_user_data_statement": "This cog stores Discord guild, channel, and status-message IDs required to maintain the configured status panel."
+  "end_user_data_statement": "This cog stores Discord guild, channel, status-message, and command-index message IDs required to maintain the configured dashboard."
 }
