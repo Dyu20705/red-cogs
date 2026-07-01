@@ -4,8 +4,9 @@ import contextlib
 
 import discord
 from discord.ext import tasks
+from redbot.core import commands
 
-from .studyops import StudyOps as BaseStudyOps
+from .studyops import DISPLAY_DAY_FMT, StudyOps as BaseStudyOps
 
 
 class StudyOps(BaseStudyOps):
@@ -79,7 +80,7 @@ class StudyOps(BaseStudyOps):
             if not isinstance(current, discord.TextChannel):
                 await getattr(guild_conf, key).set(channel.id)
 
-    @discord.ext.commands.Cog.listener()
+    @commands.Cog.listener()
     async def on_ready(self):
         for guild in self.bot.guilds:
             with contextlib.suppress(Exception):
