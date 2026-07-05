@@ -84,12 +84,12 @@ Do not edit command rows by hand.
 | studyops | `[p]goal list` | command | `goal_list` | - | - | `studyops/studyops.py:444` | List today's goals. |
 | studyops | `[p]goal remove` | command | `goal_remove` | - | - | `studyops/studyops.py:471` | Remove one goal. |
 | studyops | `[p]goal stats` | command | `goal_stats` | - | - | `studyops/studyops.py:526` | Show seven-day goal and focus statistics. |
-| studyops | `[p]leetcode` | group | `leetcode` | - | guild only, admin/manage guild | `studyops/automation.py:89` | Configure automatic LeetCode reminders. |
-| studyops | `[p]leetcode channel` | command | `leetcode_channel` | - | - | `studyops/automation.py:96` | Set the LeetCode reminder channel. |
-| studyops | `[p]leetcode enable` | command | `leetcode_enable` | - | - | `studyops/automation.py:133` | Enable or disable automatic LeetCode reminders. |
-| studyops | `[p]leetcode now` | command | `leetcode_now` | `postnow`, `test` | - | `studyops/automation.py:142` | Post the LeetCode reminder immediately. |
-| studyops | `[p]leetcode schedule` | command | `leetcode_schedule` | - | - | `studyops/automation.py:115` | Set the daily LeetCode reminder time in UTC+7. |
-| studyops | `[p]leetcode status` | command | `leetcode_status` | - | - | `studyops/automation.py:154` | Show LeetCode reminder configuration. |
+| studyops | `[p]leetcode` | group | `leetcode` | - | guild only, admin/manage guild | `studyops/automation.py:92` | Configure automatic LeetCode reminders. |
+| studyops | `[p]leetcode channel` | command | `leetcode_channel` | - | - | `studyops/automation.py:99` | Set the LeetCode reminder channel. |
+| studyops | `[p]leetcode enable` | command | `leetcode_enable` | - | - | `studyops/automation.py:136` | Enable or disable automatic LeetCode reminders. |
+| studyops | `[p]leetcode now` | command | `leetcode_now` | `postnow`, `test` | - | `studyops/automation.py:145` | Post the LeetCode reminder immediately. |
+| studyops | `[p]leetcode schedule` | command | `leetcode_schedule` | - | - | `studyops/automation.py:118` | Set the daily LeetCode reminder time in UTC+7. |
+| studyops | `[p]leetcode status` | command | `leetcode_status` | - | - | `studyops/automation.py:157` | Show LeetCode reminder configuration. |
 | studyops | `[p]pomo` | group | `pomo` | - | guild only | `studyops/studyops.py:650` | Run Pomodoro focus sessions. |
 | studyops | `[p]pomo pause` | command | `pomo_pause` | - | - | `studyops/studyops.py:731` | Pause your active Pomodoro. |
 | studyops | `[p]pomo resume` | command | `pomo_resume` | - | - | `studyops/studyops.py:756` | Resume your active Pomodoro. |
@@ -100,12 +100,29 @@ Do not edit command rows by hand.
 | studyops | `[p]progress list` | command | `progress_list` | - | - | `studyops/studyops.py:618` | List long-term progress tracks. |
 | studyops | `[p]progress remove` | command | `progress_remove` | - | - | `studyops/studyops.py:598` | Remove a progress track. |
 | studyops | `[p]progress set` | command | `progress_set` | - | - | `studyops/studyops.py:563` | Set a progress track, e.g. `!progress set IELTS 45 Listening B1`. |
+| studyops | `[p]qnote` | command | `qnote` | - | guild only | `studyops/studycoach.py:215` | Create a learning note manually. |
+| studyops | `[p]questions` | group | `questions` | - | guild only | `studyops/studycoach.py:221` | Review saved learning questions. |
+| studyops | `[p]questions export` | command | `questions_export` | - | - | `studyops/studycoach.py:249` | Export question notes as JSON. |
+| studyops | `[p]questions solved` | command | `questions_solved` | - | - | `studyops/studycoach.py:237` | Show solved learning notes. |
+| studyops | `[p]questions stats` | command | `questions_stats` | - | - | `studyops/studycoach.py:242` | Show question-note statistics. |
+| studyops | `[p]questions today` | command | `questions_today` | - | - | `studyops/studycoach.py:227` | Show today's learning notes. |
+| studyops | `[p]questions unresolved` | command | `questions_unresolved` | - | - | `studyops/studycoach.py:232` | Show unresolved learning notes. |
 | studyops | `[p]room` | group | `room` | - | guild only | `studyops/studyops.py:970` | Manage your join-to-create study room. |
 | studyops | `[p]room limit` | command | `room_limit` | - | - | `studyops/studyops.py:1036` | Set room user limit from 0 to 99. |
 | studyops | `[p]room lock` | command | `room_lock` | - | - | `studyops/studyops.py:977` | Lock your temporary study room. |
 | studyops | `[p]room permit` | command | `room_permit` | - | - | `studyops/studyops.py:1104` | Permit one member to join your locked room. |
 | studyops | `[p]room rename` | command | `room_rename` | - | - | `studyops/studyops.py:1072` | Rename your temporary study room. |
 | studyops | `[p]room unlock` | command | `room_unlock` | - | - | `studyops/studyops.py:1010` | Unlock your temporary study room. |
+| studyops | `[p]study` | group | `study` | - | guild only | `studyops/studycoach.py:89` | Study setup, sessions, and summaries. |
+| studyops | `[p]study config` | command | `study_config` | - | admin/manage guild | `studyops/studycoach.py:104` | Show StudyCoach configuration. |
+| studyops | `[p]study disable` | command | `study_disable` | - | admin/manage guild | `studyops/studycoach.py:141` | Disable one module. |
+| studyops | `[p]study enable` | command | `study_enable` | - | admin/manage guild | `studyops/studycoach.py:133` | Enable one module. |
+| studyops | `[p]study setchannel` | command | `study_setchannel` | - | admin/manage guild | `studyops/studycoach.py:149` | Set questions, log, chat, goals, or progress channel. |
+| studyops | `[p]study setup` | command | `study_setup` | - | admin/manage guild | `studyops/studycoach.py:96` | Auto-bind STUDY category channels. |
+| studyops | `[p]study setvoice` | command | `study_setvoice` | - | admin/manage guild | `studyops/studycoach.py:165` | Set studyroom or pomodoro voice channel. |
+| studyops | `[p]study start` | command | `study_start` | - | - | `studyops/studycoach.py:176` | Start a manual study session. |
+| studyops | `[p]study stop` | command | `study_stop` | - | - | `studyops/studycoach.py:189` | Stop the active study session. |
+| studyops | `[p]study today` | command | `study_today` | - | - | `studyops/studycoach.py:209` | Show today's study summary. |
 | studyops | `[p]studyset` | group | `studyset` | - | guild only, admin/manage guild | `studyops/studyops.py:117` | Configure StudyOps. |
 | studyops | `[p]studyset channel` | command | `studyset_channel` | - | - | `studyops/studyops.py:144` | Set `daily`, `progress`, or `log` text channel. |
 | studyops | `[p]studyset emptydelay` | command | `studyset_empty_delay` | - | - | `studyops/studyops.py:296` | Set empty temporary-room deletion delay. |
@@ -117,3 +134,8 @@ Do not edit command rows by hand.
 | studyops | `[p]studyset roomtracking` | command | `studyset_room_tracking` | - | - | `studyops/studyops.py:319` | Enable or disable voice-room time logging. |
 | studyops | `[p]studyset schedule` | command | `studyset_schedule` | - | - | `studyops/studyops.py:260` | Set `morning`, `review`, or `weekly` schedule in UTC+7. |
 | studyops | `[p]studyset status` | command | `studyset_status` | - | - | `studyops/studyops.py:341` | Show StudyOps configuration. |
+| studyops | `[p]vocab` | group | `vocab` | - | guild only | `studyops/studycoach.py:271` | Configure and answer vocabulary quizzes. |
+| studyops | `[p]vocab answer` | command | `vocab_answer` | - | - | `studyops/studycoach.py:290` | Answer current vocab quiz. |
+| studyops | `[p]vocab start` | command | `vocab_start` | - | - | `studyops/studycoach.py:277` | Enable vocab quiz and post one immediately. |
+| studyops | `[p]vocab stats` | command | `vocab_stats` | - | - | `studyops/studycoach.py:306` | Show vocab quiz stats. |
+| studyops | `[p]vocab stop` | command | `vocab_stop` | - | - | `studyops/studycoach.py:284` | Disable vocab quiz. |
