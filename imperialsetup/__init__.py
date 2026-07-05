@@ -1,6 +1,6 @@
 """ImperialSetup cog package."""
 
-from .hardening import ImperialSetup
+from .automation import ImperialSetup
 
 __red_end_user_data_statement__ = (
     "This cog does not persistently store end-user data. It reads guild structure "

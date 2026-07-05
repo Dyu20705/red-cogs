@@ -84,6 +84,12 @@ Do not edit command rows by hand.
 | studyops | `[p]goal list` | command | `goal_list` | - | - | `studyops/studyops.py:444` | List today's goals. |
 | studyops | `[p]goal remove` | command | `goal_remove` | - | - | `studyops/studyops.py:471` | Remove one goal. |
 | studyops | `[p]goal stats` | command | `goal_stats` | - | - | `studyops/studyops.py:526` | Show seven-day goal and focus statistics. |
+| studyops | `[p]leetcode` | group | `leetcode` | - | guild only, admin/manage guild | `studyops/automation.py:89` | Configure automatic LeetCode reminders. |
+| studyops | `[p]leetcode channel` | command | `leetcode_channel` | - | - | `studyops/automation.py:96` | Set the LeetCode reminder channel. |
+| studyops | `[p]leetcode enable` | command | `leetcode_enable` | - | - | `studyops/automation.py:133` | Enable or disable automatic LeetCode reminders. |
+| studyops | `[p]leetcode now` | command | `leetcode_now` | `postnow`, `test` | - | `studyops/automation.py:142` | Post the LeetCode reminder immediately. |
+| studyops | `[p]leetcode schedule` | command | `leetcode_schedule` | - | - | `studyops/automation.py:115` | Set the daily LeetCode reminder time in UTC+7. |
+| studyops | `[p]leetcode status` | command | `leetcode_status` | - | - | `studyops/automation.py:154` | Show LeetCode reminder configuration. |
 | studyops | `[p]pomo` | group | `pomo` | - | guild only | `studyops/studyops.py:650` | Run Pomodoro focus sessions. |
 | studyops | `[p]pomo pause` | command | `pomo_pause` | - | - | `studyops/studyops.py:731` | Pause your active Pomodoro. |
 | studyops | `[p]pomo resume` | command | `pomo_resume` | - | - | `studyops/studyops.py:756` | Resume your active Pomodoro. |

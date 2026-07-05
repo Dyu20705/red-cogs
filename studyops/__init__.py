@@ -1,4 +1,4 @@
-from .studyops import StudyOps
+from .automation import StudyOps
 
 
 async def setup(bot):
