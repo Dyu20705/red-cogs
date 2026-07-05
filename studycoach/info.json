@@ -1,0 +1,12 @@
+{
+  "author": ["Nguyen Van Duy"],
+  "description": "Standalone STUDY category coach for setup, question notes, manual study logs and vocab quiz.",
+  "install_msg": "Load the cog and run `[p]study setup`, then `[p]study config`.",
+  "short": "STUDY category coach.",
+  "requirements": [],
+  "tags": ["study", "questions", "vocab", "productivity"],
+  "type": "COG",
+  "min_bot_version": "3.5.0",
+  "min_python_version": [3, 11, 0],
+  "end_user_data_statement": "This cog stores guild channel IDs, user study sessions, question notes, and vocabulary quiz stats."
+}
