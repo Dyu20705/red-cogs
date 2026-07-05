@@ -5,15 +5,17 @@ import contextlib
 import discord
 from discord.ext import tasks
 from redbot.core import commands
+from .studycoach import StudyCoachMixin
 
 from .studyops import DISPLAY_DAY_FMT, StudyOps as BaseStudyOps
 
 
-class StudyOps(BaseStudyOps):
+class StudyOps(StudyCoachMixin, BaseStudyOps):
     """StudyOps with automatic channel discovery and LeetCode reminders."""
 
     def __init__(self, bot):
         super().__init__(bot)
+        self._studycoach_init()
         self.config.register_guild(
             leetcode_channel_id=None,
             leetcode_enabled=True,
@@ -82,6 +84,7 @@ class StudyOps(BaseStudyOps):
         for guild in self.bot.guilds:
             with contextlib.suppress(Exception):
                 await self._bind_default_channels(guild)
+                await self._studycoach_bind(guild)
 
     @commands.group(name="leetcode")
     @commands.guild_only()
